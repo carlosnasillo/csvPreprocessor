@@ -51,7 +51,7 @@ var output = fs.createWriteStream('preprocessedCSV.csv');
 output.on('finish', function () {
     console.log('== The CSV has been written ==');
     console.log('\n\n ==> Columns to use with this CSV :', transformedColumns);
-    console.log(`You can add it to you file using sed : sed -i \'\' "1s/^/${transformedColumns}\\n/" preprocessedCSV.csv`);
+    console.log(`You can add it to you file using sed (gsed on MacOS) : sed -i "1s/^/${transformedColumns}\\n/" preprocessedCSV.csv`);
 });
 
 /**
@@ -72,7 +72,7 @@ function transformColumns(columns) {
     columns.splice(gradeIndex, 1);
 
     let homeIndex = columns.indexOf('home_ownership');
-    const homeColumnsToAdd = gradesList.map(ho => `home_${ho}`);
+    const homeColumnsToAdd = homeList.map(ho => `home_${ho}`);
     homeColumnsToAdd.forEach(col => columns.splice(homeIndex++, 0, col));
     columns.splice(homeIndex, 1);
 
