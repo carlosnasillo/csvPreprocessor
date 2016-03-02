@@ -6,6 +6,11 @@
 "use strict";
 
 /**
+ * Configuration
+ */
+const csvFile = 'csv/LCmerged.csv';
+
+/**
  * Constants
  */
 const gradesList = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
@@ -30,7 +35,7 @@ var parser = parse({
     }
 });
 
-var input = fs.createReadStream('csv/LCmerged.csv');
+var input = fs.createReadStream(csvFile);
 
 var transformer = transform(record => transformRecord(record));
 
