@@ -10,6 +10,7 @@
  */
 const gradesList = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
 const homeList = ['ANY', 'RENT', 'MORTGAGE', 'OWN', 'OTHER', 'NONE'];
+
 /**
  * Main
  */
@@ -44,9 +45,16 @@ input
 
 function transformColumns(columns) {
     let gradeIndex = columns.indexOf('grade');
-    const columnsToAdd = gradesList.map(grade => `grade_${grade}`);
-    columnsToAdd.forEach(col => columns.splice(gradeIndex++, 0, col));
+    const gradeColumnsToAdd = gradesList.map(grade => `grade_${grade}`);
+    gradeColumnsToAdd.forEach(col => columns.splice(gradeIndex++, 0, col));
     columns.splice(gradeIndex, 1);
+
+    let homeIndex = columns.indexOf('home_ownership');
+    const homeColumnsToAdd = gradesList.map(grade => `home_${grade}`);
+    homeColumnsToAdd.forEach(col => columns.splice(homeIndex++, 0, col));
+    columns.splice(homeIndex, 1);
+
+    console.log(columns);
     return columns;
 }
 
