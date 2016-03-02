@@ -26,8 +26,15 @@ var parse = require('csv-parse');
 var transform = require('stream-transform');
 var stringify = require('csv-stringify');
 
-let transformedColumns;
+/**
+ * Streams definition
+ */
 
+// input
+var input = fs.createReadStream(csvFile);
+
+// parser
+let transformedColumns;
 var parser = parse({
     delimiter: ',',
     columns: firstLine => {
@@ -36,14 +43,23 @@ var parser = parse({
     }
 });
 
-var input = fs.createReadStream(csvFile);
-
+// transformer
 var transformer = transform(record => transformRecord(record));
 
-input
-    .pipe(parser).pipe(transformer).pipe(process.stdout);
+// output
+var output = fs.createWriteStream('preprocessedCSV.csv');
+output.on('finish', function () {
+    console.log('== The CSV has been written ==');
+    console.log('\n\n ==> Columns to use with this CSV :', transformedColumns);
+    console.log(`You can add it to you file using sed : sed -i \'\' "1s/^/${transformedColumns}\\n/" preprocessedCSV.csv`);
+});
 
-console.log('\n\n ==> Columns to use with this CSV :', transformedColumns);
+/**
+ * Execution of the stream
+ */
+
+input
+    .pipe(parser).pipe(transformer).pipe(output);
 
 /**
  * Functions
