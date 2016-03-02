@@ -11,6 +11,7 @@
 const gradesList = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
 const homeList = ['ANY', 'RENT', 'MORTGAGE', 'OWN', 'OTHER', 'NONE'];
 const ficoColumns = ['FICO1', 'FICO2', 'FICO3', 'FICO4', 'FICO5', 'FICO6'];
+const purposeList = ['credit_card', 'debt_consolidation', 'car', 'house', 'home_improvement', 'other', 'medical', 'moving', 'major_purchase', 'vacation', 'small_business', 'renewable_energy', 'wedding'];
 
 /**
  * Main
@@ -20,8 +21,6 @@ var parse = require('csv-parse');
 var transform = require('stream-transform');
 
 let transformedColumns;
-
-let res = true;
 
 var parser = parse({
     delimiter: ',',
@@ -49,9 +48,14 @@ function transformColumns(columns) {
     columns.splice(gradeIndex, 1);
 
     let homeIndex = columns.indexOf('home_ownership');
-    const homeColumnsToAdd = gradesList.map(grade => `home_${grade}`);
+    const homeColumnsToAdd = gradesList.map(ho => `home_${ho}`);
     homeColumnsToAdd.forEach(col => columns.splice(homeIndex++, 0, col));
     columns.splice(homeIndex, 1);
+
+    let purposeIndex = columns.indexOf('purpose');
+    const purposeColumnsToAdd = purposeList.map(purpose => `purpose_${purpose}`);
+    purposeColumnsToAdd.forEach(col => columns.splice(purposeIndex++, 0, col));
+    columns.splice(purposeIndex, 1);
 
     let ficoIndex = columns.indexOf('fico_range_low');
     ficoColumns.forEach(col => columns.splice(ficoIndex++, 0, col));
