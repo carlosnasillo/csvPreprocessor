@@ -1,0 +1,11 @@
+{
+  "name": "main",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "run": "node src/main.js"
+  },
+  "dependencies": {
+    "csv": "^0.4.6"
+  }
+}
