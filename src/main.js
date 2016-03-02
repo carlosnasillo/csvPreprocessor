@@ -53,6 +53,10 @@ function transformColumns(columns) {
     homeColumnsToAdd.forEach(col => columns.splice(homeIndex++, 0, col));
     columns.splice(homeIndex, 1);
 
+    let ficoIndex = columns.indexOf('fico_range_low');
+    ficoColumns.forEach(col => columns.splice(ficoIndex++, 0, col));
+    columns.splice(ficoIndex, 2);
+
     return columns;
 }
 
