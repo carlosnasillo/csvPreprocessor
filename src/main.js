@@ -69,10 +69,12 @@ function transformRecord(record) {
 
     const gradesResult = generateMatrix(gradesList, 'grade', record);
     const homeOwnershipResult = generateMatrix(homeList, 'home_ownership', record);
+    const purposeResult = generateMatrix(purposeList, 'purpose', record);
     const ficoResult = generateFicoMatrix('fico_range_low', 'fico_range_high', record);
 
     const gradeColIndex = recordKeys.indexOf('grade');
     const homeOwnershipColIndex = recordKeys.indexOf('home_ownership');
+    const purposeColIndex = recordKeys.indexOf('purpose');
     const ficoLowColIndex = recordKeys.indexOf('fico_range_low');
 
     let result = [];
@@ -82,6 +84,9 @@ function transformRecord(record) {
         }
         else if (index == gradeColIndex) {
             result.push(gradesResult);
+        }
+        else if (index == purposeColIndex) {
+            result.push(purposeResult);
         }
         else if (index == ficoLowColIndex) {
             result.push(ficoResult);
