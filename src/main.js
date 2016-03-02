@@ -54,20 +54,15 @@ function transformColumns(columns) {
     homeColumnsToAdd.forEach(col => columns.splice(homeIndex++, 0, col));
     columns.splice(homeIndex, 1);
 
-    console.log(columns);
     return columns;
 }
 
 function transformRecord(record) {
-    const gradesResult = Array(gradesList.length).fill(0);
-    const gradeNo = gradesList.indexOf(record.grade);
-    gradesResult[gradeNo] = 1;
-
-    const homeOwnershipResult = Array(homeList.length).fill(0);
-    const homeOwnershipNo = homeList.indexOf(record.home_ownership);
-    homeOwnershipResult[homeOwnershipNo] = 1;
-
     const recordKeys = Object.keys(record);
+
+    const gradesResult = generateMatrix(gradesList, 'grade', record);
+    const homeOwnershipResult = generateMatrix(homeList, 'home_ownership', record);
+
     const gradeColIndex = recordKeys.indexOf('grade');
     const homeOwnershipColIndex = recordKeys.indexOf('home_ownership');
 
@@ -85,4 +80,12 @@ function transformRecord(record) {
     });
 
     return result + '\n';
+
+    function generateMatrix(values, columnToReplace, record) {
+        const matrix = Array(values.length).fill(0);
+        const valueNo = values.indexOf(record[columnToReplace]);
+        matrix[valueNo] = 1;
+
+        return matrix;
+    }
 }
