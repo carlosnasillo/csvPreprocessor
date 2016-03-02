@@ -24,6 +24,7 @@ const purposeList = ['credit_card', 'debt_consolidation', 'car', 'house', 'home_
 var fs = require('fs');
 var parse = require('csv-parse');
 var transform = require('stream-transform');
+var stringify = require('csv-stringify');
 
 let transformedColumns;
 
@@ -41,6 +42,8 @@ var transformer = transform(record => transformRecord(record));
 
 input
     .pipe(parser).pipe(transformer).pipe(process.stdout);
+
+console.log('\n\n ==> Columns to use with this CSV :', transformedColumns);
 
 /**
  * Functions
