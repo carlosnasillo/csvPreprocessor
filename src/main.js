@@ -9,7 +9,7 @@
  * Constants
  */
 const gradesList = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
-
+const homeList = ['ANY', 'RENT', 'MORTGAGE', 'OWN', 'OTHER', 'NONE'];
 /**
  * Main
  */
@@ -35,16 +35,12 @@ var transformer = transform(function(record, callback){
     }, 500);
 }, {parallel: 10});
 
-input.pipe(parser).pipe(transformer).pipe(process.stdout);
-
+input
+    .pipe(parser).pipe(transformer).pipe(process.stdout);
 
 /**
  * Functions
  */
-
-function transformRecord(record) {
-    return transformGrades(record);
-}
 
 function transformColumns(columns) {
     let gradeIndex = columns.indexOf('grade');
@@ -54,19 +50,25 @@ function transformColumns(columns) {
     return columns;
 }
 
-function transformGrades(record) {
-    console.log(record);
+function transformRecord(record) {
     const gradesResult = Array(gradesList.length).fill(0);
     const gradeNo = gradesList.indexOf(record.grade);
     gradesResult[gradeNo] = 1;
 
+    const homeOwnershipResult = Array(homeList.length).fill(0);
+    const homeOwnershipNo = homeList.indexOf(record.home_ownership);
+    homeOwnershipResult[homeOwnershipNo] = 1;
+
     const recordKeys = Object.keys(record);
     const gradeColIndex = recordKeys.indexOf('grade');
+    const homeOwnershipColIndex = recordKeys.indexOf('home_ownership');
 
     let result = [];
-
     recordKeys.forEach((key, index) => {
-        if (index == gradeColIndex) {
+        if (index == homeOwnershipColIndex) {
+            result.push(homeOwnershipResult);
+        }
+        else if (index == gradeColIndex) {
             result.push(gradesResult);
         }
         else {
