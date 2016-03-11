@@ -43,8 +43,28 @@ var parser = parse({
     }
 });
 
+// coma remover
+var comaRemover = transform(record => {
+    Object.keys(record).forEach(k => {
+        if (record[k].indexOf(',') > -1) {
+            record[k] = record[k].replace(/,/g, '');
+        }
+    });
+    return record;
+});
+
 // transformer
 var transformer = transform(record => transformRecord(record));
+
+// verifier
+var verifier = transform(record => {
+    if (record.split(',').length === 78) {
+        return record;
+    }
+    else {
+        console.log("Error : ", record.split(',').length, JSON.stringify(record));
+    }
+});
 
 // output
 var output = fs.createWriteStream('preprocessedCSV.csv');
@@ -59,7 +79,7 @@ output.on('finish', function () {
  */
 
 input
-    .pipe(parser).pipe(transformer).pipe(output);
+    .pipe(parser).pipe(comaRemover).pipe(transformer).pipe(verifier).pipe(output);
 
 /**
  * Functions
@@ -88,8 +108,11 @@ function transformColumns(columns) {
     return columns;
 }
 
+const issue_d = {};
+
 function transformRecord(record) {
     const recordKeys = Object.keys(record);
+    issue_d[record.issue_d] = '';
 
     const gradesResult = generateMatrix(gradesList, 'grade', record);
     const homeOwnershipResult = generateMatrix(homeList, 'home_ownership', record);
