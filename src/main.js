@@ -18,6 +18,7 @@ const homeList = ['ANY', 'RENT', 'MORTGAGE', 'OWN', 'OTHER', 'NONE'];
 const ficoColumns = ['FICO1', 'FICO2', 'FICO3', 'FICO4', 'FICO5', 'FICO6'];
 const purposeList = ['credit_card', 'debt_consolidation', 'car', 'house', 'home_improvement', 'other', 'medical', 'moving', 'major_purchase', 'vacation', 'small_business', 'renewable_energy', 'wedding'];
 const statusList = ['Fully Paid', 'Current'];
+const monthList = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 /**
  * Main
@@ -59,7 +60,7 @@ var transformer = transform(record => transformRecord(record));
 
 // verifier
 var verifier = transform(record => {
-    if (record.split(',').length === 78) {
+    if (record.split(',').length === 80) {
         return record;
     }
     else {
@@ -105,7 +106,10 @@ function transformColumns(columns) {
     let statusIndex = columns.indexOf('loan_status');
     const statusColumnToAdd = ['status'];
     statusColumnToAdd.forEach(col => columns.splice(statusIndex++, 0, col));
-    columns.splice(statusIndex, 1);
+
+    let monthsPaidOutOfTermIndex = 0;
+    const monthsPaidOutOfTermColumnToAdd = ['monthsPaidOutOfTerm'];
+    monthsPaidOutOfTermColumnToAdd.forEach(col => columns.splice(monthsPaidOutOfTermIndex++, 0, col));
 
     let ficoIndex = columns.indexOf('fico_range_low');
     ficoColumns.forEach(col => columns.splice(ficoIndex++, 0, col));
@@ -114,22 +118,21 @@ function transformColumns(columns) {
     return columns;
 }
 
-const issue_d = {};
-
 function transformRecord(record) {
     const recordKeys = Object.keys(record);
-    issue_d[record.issue_d] = '';
 
     const gradesResult = generateMatrix(gradesList, 'grade', record);
     const homeOwnershipResult = generateMatrix(homeList, 'home_ownership', record);
     const purposeResult = generateMatrix(purposeList, 'purpose', record);
     const statusResult = statusList.indexOf(record.loan_status) > -1 ? 1 : 0;
+    const monthsPaidOutOfTermResult = diffDates(record.issue_d, record.last_pymnt_d) / record.term;
     const ficoResult = generateFicoMatrix('fico_range_low', 'fico_range_high', record);
 
     const gradeColIndex = recordKeys.indexOf('grade');
     const homeOwnershipColIndex = recordKeys.indexOf('home_ownership');
     const purposeColIndex = recordKeys.indexOf('purpose');
     const statusColIndex = recordKeys.indexOf('loan_status');
+    const monthsPaidOutOfTermIndex = 0;
     const ficoLowColIndex = recordKeys.indexOf('fico_range_low');
 
     let result = [];
@@ -145,6 +148,11 @@ function transformRecord(record) {
         }
         else if (index == statusColIndex) {
             result.push(statusResult);
+            result.push(record[recordKeys[index]]);
+        }
+        else if (index == monthsPaidOutOfTermIndex) {
+            result.push(monthsPaidOutOfTermResult);
+            result.push(record[recordKeys[index]]);
         }
         else if (index == ficoLowColIndex) {
             result.push(ficoResult);
@@ -200,5 +208,23 @@ function transformRecord(record) {
         matrix[valueNo] = 1;
 
         return matrix;
+    }
+
+    function diffDates(issued_d, last_payment) {
+        const issuedDSplit = issued_d.split('-');
+        const issuedMonthNb = monthList.indexOf(issuedDSplit[0]);
+        const issuedYearNb = issuedDSplit[1];
+
+        const lastPaymentSplit = last_payment.split('-');
+        const lastPaymentMonthNb = monthList.indexOf(lastPaymentSplit[0]);
+        const lastPaymentYearNb = lastPaymentSplit[1];
+
+        if (issuedYearNb == lastPaymentYearNb) {
+            const diff = issuedMonthNb - lastPaymentMonthNb;
+            return Math.abs(diff);
+        }
+        else {
+            return lastPaymentMonthNb - issuedMonthNb + Math.abs(issuedYearNb - lastPaymentYearNb) * 12;
+        }
     }
 }
