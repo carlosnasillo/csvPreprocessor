@@ -17,6 +17,7 @@ const gradesList = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
 const homeList = ['ANY', 'RENT', 'MORTGAGE', 'OWN', 'OTHER', 'NONE'];
 const ficoColumns = ['FICO1', 'FICO2', 'FICO3', 'FICO4', 'FICO5', 'FICO6'];
 const purposeList = ['credit_card', 'debt_consolidation', 'car', 'house', 'home_improvement', 'other', 'medical', 'moving', 'major_purchase', 'vacation', 'small_business', 'renewable_energy', 'wedding'];
+const statusList = ['Fully Paid', 'Current'];
 
 /**
  * Main
@@ -101,6 +102,11 @@ function transformColumns(columns) {
     purposeColumnsToAdd.forEach(col => columns.splice(purposeIndex++, 0, col));
     columns.splice(purposeIndex, 1);
 
+    let statusIndex = columns.indexOf('loan_status');
+    const statusColumnToAdd = ['status'];
+    statusColumnToAdd.forEach(col => columns.splice(statusIndex++, 0, col));
+    columns.splice(statusIndex, 1);
+
     let ficoIndex = columns.indexOf('fico_range_low');
     ficoColumns.forEach(col => columns.splice(ficoIndex++, 0, col));
     columns.splice(ficoIndex, 2);
@@ -117,11 +123,13 @@ function transformRecord(record) {
     const gradesResult = generateMatrix(gradesList, 'grade', record);
     const homeOwnershipResult = generateMatrix(homeList, 'home_ownership', record);
     const purposeResult = generateMatrix(purposeList, 'purpose', record);
+    const statusResult = statusList.indexOf(record.loan_status) > -1 ? 1 : 0;
     const ficoResult = generateFicoMatrix('fico_range_low', 'fico_range_high', record);
 
     const gradeColIndex = recordKeys.indexOf('grade');
     const homeOwnershipColIndex = recordKeys.indexOf('home_ownership');
     const purposeColIndex = recordKeys.indexOf('purpose');
+    const statusColIndex = recordKeys.indexOf('loan_status');
     const ficoLowColIndex = recordKeys.indexOf('fico_range_low');
 
     let result = [];
@@ -134,6 +142,9 @@ function transformRecord(record) {
         }
         else if (index == purposeColIndex) {
             result.push(purposeResult);
+        }
+        else if (index == statusColIndex) {
+            result.push(statusResult);
         }
         else if (index == ficoLowColIndex) {
             result.push(ficoResult);
