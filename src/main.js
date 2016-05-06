@@ -8,7 +8,7 @@
 /**
  * Configuration
  */
-const csvFile = 'csv/LCmerged.csv';
+const csvFile = '/Users/julienderay/Lattice/csvs/LoanStats3d_securev1.csv';
 
 /**
  * Constants
@@ -60,20 +60,21 @@ var transformer = transform(record => transformRecord(record));
 
 // verifier
 var verifier = transform(record => {
-    if (record.split(',').length === 80) {
+    // if (record.split(',').length === 80) {
         return record;
-    }
-    else {
-        console.log("Error : ", record.split(',').length, JSON.stringify(record));
-    }
+    // }
+    // else {
+    //     console.log("Error : ", record.split(',').length, JSON.stringify(record));
+    // }
 });
 
 // output
-var output = fs.createWriteStream('preprocessedCSV.csv');
+const newFileName = csvFile.split('.csv')[0] + '_preprocessed.csv';
+var output = fs.createWriteStream(newFileName);
 output.on('finish', function () {
     console.log('== The CSV has been written ==');
     console.log('\n\n ==> Columns to use with this CSV :', transformedColumns);
-    console.log(`You can add it to you file using sed (gsed on MacOS) : sed -i "1s/^/${transformedColumns}\\n/" preprocessedCSV.csv`);
+    console.log(`You can add it to you file using sed (gsed on MacOS) : sed -i "1s/^/${transformedColumns}\\n/" ${newFileName}`);
 });
 
 /**
@@ -120,6 +121,10 @@ function transformColumns(columns) {
 
 function transformRecord(record) {
     const recordKeys = Object.keys(record);
+
+    if (record.issue_d === undefined) {
+        return '';
+    }
 
     const gradesResult = generateMatrix(gradesList, 'grade', record);
     const homeOwnershipResult = generateMatrix(homeList, 'home_ownership', record);
