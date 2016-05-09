@@ -8,7 +8,7 @@
 /**
  * Configuration
  */
-const csvFile = '/Users/julienderay/Lattice/csvs/prepreprocessed.csv';
+const csvFile = '/Users/julienderay/Lattice/csvs/concat.csv';
 
 /**
  * Constants
